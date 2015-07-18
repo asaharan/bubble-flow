@@ -7,6 +7,7 @@ function Tile(position,value){
     this.value=value;
     this.firedFrom=null;
     this.fireDirection=null;
+    this.element_id=null;
 }
 Tile.prototype.savePosition=function(){
     this.previousPosition={x:this.x,y:this.y};

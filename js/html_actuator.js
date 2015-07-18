@@ -7,12 +7,19 @@ function HTMLActuator(){
     this.tileContainer=document.querySelector('.tileContainer');
 }
 HTMLActuator.prototype.fireTile= function (tile,parent) {
-    console.log('fired',tile);
     var init={};
     init.x=tile.x;
     init.y=tile.y;
     var nextPosition=this.findNextPosition(init,tile.fireDirection,parent);
-    console.log(nextPosition);
+    if(nextPosition==null){
+        //no one to catch so throwing tile
+        this.eatUp(tile,parent);
+    }else{
+        this.moveTile(tile,nextPosition,parent);
+    }
+};
+HTMLActuator.prototype.eatUp=function(tile,parent){
+    this.removeTile(tile.element_id,parent);
 };
 HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
     var toMerge=null;
@@ -45,7 +52,7 @@ HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
         return null;
     }
     if(directions.up==dir){
-        for(i=position.y;i>=-1;i--){
+        for(i=position.y-1;i>=-1;i--){
             toMerge=parent.grid.findTileByPosition({x:position.x,y:i});
             if(toMerge!=null){
                 return {x:toMerge.x,y:toMerge.y};
@@ -55,7 +62,6 @@ HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
     }
 };
 HTMLActuator.prototype.addTile= function (tile,parent) {
-    var self=this;
     var wrapper=document.createElement('div');
     var inner=document.createElement('div');
     var clicker=document.createElement('div');
@@ -71,13 +77,13 @@ HTMLActuator.prototype.addTile= function (tile,parent) {
     this.applyClasses(wrapper,classes);
 
     var id=this.uniqueIdentity(parent);
-    this.addIdentity(wrapper,id);
+    this.addIdentity(wrapper,id,true);
+    tile.element_id=id;
     this.addIdentity(clicker,id);
-
     wrapper.appendChild(clicker);
 
     this.tileContainer.appendChild(wrapper);
-    parent.grid.addTile(tile,id);
+    parent.grid.addTile(tile);
 
     parent.inputManager.bindButtonPress(".clicker[data-id='"+id+"']", parent.split.bind(parent));
 };
@@ -87,8 +93,12 @@ HTMLActuator.prototype.positionClass= function (position) {
 HTMLActuator.prototype.valueClass= function (value) {
   return parseInt(Math.floor(value/100)*100);
 };
-HTMLActuator.prototype.addIdentity= function (element,id) {
-    element.setAttribute('data-id',id.toString());
+HTMLActuator.prototype.addIdentity= function (element,id,iswrapper) {
+
+    if(iswrapper!=true){
+        element.setAttribute('data-id',id.toString());
+    }
+    if(iswrapper){element.setAttribute('id','tile-'+id.toString())}
 };
 HTMLActuator.prototype.applyClasses=function(element,classes){
     element.setAttribute('class',classes.join(' '));
@@ -100,10 +110,27 @@ HTMLActuator.prototype.uniqueIdentity= function (parent) {
 HTMLActuator.prototype.mergeTiles=function(firstTile,secondTile){
 
 };
-HTMLActuator.prototype.removeTile= function (tileId) {
-    var self=this;
-    var tileWrapper=document.querySelector(".tile[data-id='"+tileId+"']");
-    console.log('tile id is '+tileId+' tileWrapper is ',tileWrapper,this.tileContainer);
-    tileWrapper.remove();
-    setTimeout(function () {tileWrapper.remove();},200);
+HTMLActuator.prototype.removeTile= function (tileId,parent) {
+    parent.grid.removeTile(tileId);//removed from grid array here now we have to remove visible tile
+    var tileWrapper=document.getElementById('tile-'+tileId);
+    this.removeElement(tileWrapper);
+};
+HTMLActuator.prototype.removeElement= function (element) {
+    window.requestAnimationFrame(function () {
+        element.remove();
+    })
+};
+HTMLActuator.prototype.moveTile= function (tile, nextPosition) {
+    var tileElement=document.getElementById('tile-'+tile.element_id);
+    this.updateClasses(tileElement,this.positionClass(nextPosition));
+    tile.x=nextPosition.x;
+    tile.y=nextPosition.y;
+};
+HTMLActuator.prototype.updateClasses= function (element, classToUpdate) {
+    var  self=this;
+    var elementClassList=element.className.split(' ');
+    elementClassList[2]=classToUpdate;
+    window.requestAnimationFrame(function () {
+        self.applyClasses(element,elementClassList);
+    });
 };

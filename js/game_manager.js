@@ -8,7 +8,7 @@ function GameManager(size,InputManager,Actuator,StorageManager){
     this.storagemanager=StorageManager;
     this.actuator=new HTMLActuator;
     this.grid=new Grid;
-    this.startTiles=256;
+    this.startNumber=512;
     this.identity=0;
     this.inputManager.on('restart',this.restart.bind(this));
     this.setup();
@@ -17,7 +17,10 @@ function GameManager(size,InputManager,Actuator,StorageManager){
 GameManager.prototype.setup=function(){
     for(var i=0;i<4;i++){
         for(var j=0;j<4;j++){
-            var tile=new Tile({x:i,y:j},128);
+            if(i==0&&j>0&&j!=3){
+                continue;
+            }
+            var tile=new Tile({x:j,y:i},this.startNumber);
             this.actuator.addTile(tile,this);
         }
     }
@@ -32,7 +35,7 @@ GameManager.prototype.split= function (event) {
     var splitElements=this.grid.getSplitElements(tile);
     if(splitElements){
         splitElements.forEach(function(element){
-            self.actuator.removeTile(id);
+            self.actuator.removeTile(id,self);
             self.actuator.addTile(element,self);
             self.actuator.fireTile(element,self);
         });

@@ -9,6 +9,7 @@ div.gameContainer{
   //width:$gameWidth;
   display:inline-block;
   color:$gameColor;
+  @include user-select(none);
 }
 .gameGridContainer{
   position: relative;
@@ -49,7 +50,7 @@ div.gameContainer{
         &.new{
           @include animation(addNewAnimation 400ms $ease-in-out-quart);
         }
-        @include transition(all 1000ms $ease-in-out-quart);
+        @include transition(all 400ms $ease-in-quad);
         position: absolute;
         width: $tileWidth;
         height: $tileWidth;

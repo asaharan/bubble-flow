@@ -4,15 +4,24 @@
 function Grid(){
     this.grid=[];
 }
-Grid.prototype.addTile= function (tile,elementId) {
-    this.grid.push({tile:tile,id:elementId});
-    //console.log(this.grid);
+Grid.prototype.addTile= function (tile) {
+    this.grid.push(tile);
+};
+Grid.prototype.removeTile= function (id) {
+    var newGrid=[];
+    this.grid.forEach(function (tile) {
+        if(tile.element_id!=id){
+            newGrid.push(tile);
+        }
+    });
+    this.grid=[];
+    this.grid=newGrid.slice();
 };
 Grid.prototype.findTileById= function (elementId) {
     var tile=null;
     this.grid.forEach(function (tilet) {
-        if(tilet.id==elementId){
-            tile=tilet.tile;
+        if(tilet.element_id==elementId){
+            tile=tilet;
         }
     });
     return tile;
@@ -20,17 +29,13 @@ Grid.prototype.findTileById= function (elementId) {
 Grid.prototype.findTileByPosition= function (position) {
     var tile=null;
     this.grid.forEach(function (tilet) {
-        tilet=tilet.tile;
         if(tilet.x==position.x&&tilet.y==position.y){
             tile=tilet;
         }
     });
-    if(tile==null) console.log('nothing find');
     return tile;
 };
 Grid.prototype.getSplitElements=function(tile){
-    //var splitValue=parseInt(Math.floor(tile.value/2));
-    //console.log(this.directions(tile));
     return this.directions(tile);
 };
 Grid.prototype.directions= function (tile) {
@@ -38,9 +43,17 @@ Grid.prototype.directions= function (tile) {
     if(corner){
         return this.makeChildTiles(tile,corner);
     }
+    var center=this.isCenter(tile);
+    if(center){
+        return this.makeChildTiles(tile,center);
+    }
+    var edge=this.isEdge(tile);
+    if(edge){
+        return this.makeChildTiles(tile,edge);
+    }
     return false;
 };
-Grid.prototype.makeChildTiles= function (tile,directions) {
+Grid.prototype.makeChildTiles= function (tile,directions) {//tiles to be fired
     var tiles=[];
     var initPosition={x:tile.x,y:tile.y};
     var childValue=this.splitValue(tile.value,2);
@@ -69,4 +82,25 @@ Grid.prototype.isCorner= function (tile) {
         return [directions.left,directions.up];
     }
     return false;
+};
+Grid.prototype.isCenter=function(tile){
+    if(tile.x>0&&tile.x<size-1&&tile.y>0&&tile.y<size-1){
+        return [directions.up,directions.right,directions.down,directions.left];
+    }
+    return false;
+};
+Grid.prototype.isEdge= function (tile) {
+    if(tile.x==0&&(tile.y==1||tile.y==2)){//left edge
+        return [directions.up,directions.right,directions.down];
+    }
+    if(tile.x==3&&(tile.y==1||tile.y==2)){//right edge
+        return [directions.up,directions.down,directions.left];
+    }
+    if(tile.y==0&&(tile.x==1||tile.x==2)){//top edge
+        return [directions.right,directions.down,directions.left];
+    }
+    if(tile.y==3&&(tile.x==1||tile.x==2)){//bottom edge
+        return [directions.top,directions.right,directions.left];
+    }
+
 };

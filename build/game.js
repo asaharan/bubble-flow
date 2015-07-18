@@ -4,15 +4,24 @@
 function Grid(){
     this.grid=[];
 }
-Grid.prototype.addTile= function (tile,elementId) {
-    this.grid.push({tile:tile,id:elementId});
-    //console.log(this.grid);
+Grid.prototype.addTile= function (tile) {
+    this.grid.push(tile);
+};
+Grid.prototype.removeTile= function (id) {
+    var newGrid=[];
+    this.grid.forEach(function (tile) {
+        if(tile.element_id!=id){
+            newGrid.push(tile);
+        }
+    });
+    this.grid=[];
+    this.grid=newGrid.slice();
 };
 Grid.prototype.findTileById= function (elementId) {
     var tile=null;
     this.grid.forEach(function (tilet) {
-        if(tilet.id==elementId){
-            tile=tilet.tile;
+        if(tilet.element_id==elementId){
+            tile=tilet;
         }
     });
     return tile;
@@ -20,17 +29,13 @@ Grid.prototype.findTileById= function (elementId) {
 Grid.prototype.findTileByPosition= function (position) {
     var tile=null;
     this.grid.forEach(function (tilet) {
-        tilet=tilet.tile;
         if(tilet.x==position.x&&tilet.y==position.y){
             tile=tilet;
         }
     });
-    if(tile==null) console.log('nothing find');
     return tile;
 };
 Grid.prototype.getSplitElements=function(tile){
-    //var splitValue=parseInt(Math.floor(tile.value/2));
-    //console.log(this.directions(tile));
     return this.directions(tile);
 };
 Grid.prototype.directions= function (tile) {
@@ -38,9 +43,17 @@ Grid.prototype.directions= function (tile) {
     if(corner){
         return this.makeChildTiles(tile,corner);
     }
+    var center=this.isCenter(tile);
+    if(center){
+        return this.makeChildTiles(tile,center);
+    }
+    var edge=this.isEdge(tile);
+    if(edge){
+        return this.makeChildTiles(tile,edge);
+    }
     return false;
 };
-Grid.prototype.makeChildTiles= function (tile,directions) {
+Grid.prototype.makeChildTiles= function (tile,directions) {//tiles to be fired
     var tiles=[];
     var initPosition={x:tile.x,y:tile.y};
     var childValue=this.splitValue(tile.value,2);
@@ -69,6 +82,27 @@ Grid.prototype.isCorner= function (tile) {
         return [directions.left,directions.up];
     }
     return false;
+};
+Grid.prototype.isCenter=function(tile){
+    if(tile.x>0&&tile.x<size-1&&tile.y>0&&tile.y<size-1){
+        return [directions.up,directions.right,directions.down,directions.left];
+    }
+    return false;
+};
+Grid.prototype.isEdge= function (tile) {
+    if(tile.x==0&&(tile.y==1||tile.y==2)){//left edge
+        return [directions.up,directions.right,directions.down];
+    }
+    if(tile.x==3&&(tile.y==1||tile.y==2)){//right edge
+        return [directions.up,directions.down,directions.left];
+    }
+    if(tile.y==0&&(tile.x==1||tile.x==2)){//top edge
+        return [directions.right,directions.down,directions.left];
+    }
+    if(tile.y==3&&(tile.x==1||tile.x==2)){//bottom edge
+        return [directions.top,directions.right,directions.left];
+    }
+
 };;/**
  * Created by amitkum on 18/7/15.
  */
@@ -125,12 +159,19 @@ function HTMLActuator(){
     this.tileContainer=document.querySelector('.tileContainer');
 }
 HTMLActuator.prototype.fireTile= function (tile,parent) {
-    console.log('fired',tile);
     var init={};
     init.x=tile.x;
     init.y=tile.y;
     var nextPosition=this.findNextPosition(init,tile.fireDirection,parent);
-    console.log(nextPosition);
+    if(nextPosition==null){
+        //no one to catch so throwing tile
+        this.eatUp(tile,parent);
+    }else{
+        this.moveTile(tile,nextPosition,parent);
+    }
+};
+HTMLActuator.prototype.eatUp=function(tile,parent){
+    this.removeTile(tile.element_id,parent);
 };
 HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
     var toMerge=null;
@@ -163,7 +204,7 @@ HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
         return null;
     }
     if(directions.up==dir){
-        for(i=position.y;i>=-1;i--){
+        for(i=position.y-1;i>=-1;i--){
             toMerge=parent.grid.findTileByPosition({x:position.x,y:i});
             if(toMerge!=null){
                 return {x:toMerge.x,y:toMerge.y};
@@ -173,7 +214,6 @@ HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
     }
 };
 HTMLActuator.prototype.addTile= function (tile,parent) {
-    var self=this;
     var wrapper=document.createElement('div');
     var inner=document.createElement('div');
     var clicker=document.createElement('div');
@@ -189,13 +229,13 @@ HTMLActuator.prototype.addTile= function (tile,parent) {
     this.applyClasses(wrapper,classes);
 
     var id=this.uniqueIdentity(parent);
-    this.addIdentity(wrapper,id);
+    this.addIdentity(wrapper,id,true);
+    tile.element_id=id;
     this.addIdentity(clicker,id);
-
     wrapper.appendChild(clicker);
 
     this.tileContainer.appendChild(wrapper);
-    parent.grid.addTile(tile,id);
+    parent.grid.addTile(tile);
 
     parent.inputManager.bindButtonPress(".clicker[data-id='"+id+"']", parent.split.bind(parent));
 };
@@ -205,8 +245,12 @@ HTMLActuator.prototype.positionClass= function (position) {
 HTMLActuator.prototype.valueClass= function (value) {
   return parseInt(Math.floor(value/100)*100);
 };
-HTMLActuator.prototype.addIdentity= function (element,id) {
-    element.setAttribute('data-id',id.toString());
+HTMLActuator.prototype.addIdentity= function (element,id,iswrapper) {
+
+    if(iswrapper!=true){
+        element.setAttribute('data-id',id.toString());
+    }
+    if(iswrapper){element.setAttribute('id','tile-'+id.toString())}
 };
 HTMLActuator.prototype.applyClasses=function(element,classes){
     element.setAttribute('class',classes.join(' '));
@@ -218,12 +262,29 @@ HTMLActuator.prototype.uniqueIdentity= function (parent) {
 HTMLActuator.prototype.mergeTiles=function(firstTile,secondTile){
 
 };
-HTMLActuator.prototype.removeTile= function (tileId) {
-    var self=this;
-    var tileWrapper=document.querySelector(".tile[data-id='"+tileId+"']");
-    console.log('tile id is '+tileId+' tileWrapper is ',tileWrapper,this.tileContainer);
-    tileWrapper.remove();
-    setTimeout(function () {tileWrapper.remove();},200);
+HTMLActuator.prototype.removeTile= function (tileId,parent) {
+    parent.grid.removeTile(tileId);//removed from grid array here now we have to remove visible tile
+    var tileWrapper=document.getElementById('tile-'+tileId);
+    this.removeElement(tileWrapper);
+};
+HTMLActuator.prototype.removeElement= function (element) {
+    window.requestAnimationFrame(function () {
+        element.remove();
+    })
+};
+HTMLActuator.prototype.moveTile= function (tile, nextPosition) {
+    var tileElement=document.getElementById('tile-'+tile.element_id);
+    this.updateClasses(tileElement,this.positionClass(nextPosition));
+    tile.x=nextPosition.x;
+    tile.y=nextPosition.y;
+};
+HTMLActuator.prototype.updateClasses= function (element, classToUpdate) {
+    var  self=this;
+    var elementClassList=element.className.split(' ');
+    elementClassList[2]=classToUpdate;
+    window.requestAnimationFrame(function () {
+        self.applyClasses(element,elementClassList);
+    });
 };;/**
  * Created by amitkum on 18/7/15.
  */
@@ -233,6 +294,7 @@ function Tile(position,value){
     this.value=value;
     this.firedFrom=null;
     this.fireDirection=null;
+    this.element_id=null;
 }
 Tile.prototype.savePosition=function(){
     this.previousPosition={x:this.x,y:this.y};
@@ -262,7 +324,7 @@ function GameManager(size,InputManager,Actuator,StorageManager){
     this.storagemanager=StorageManager;
     this.actuator=new HTMLActuator;
     this.grid=new Grid;
-    this.startTiles=256;
+    this.startNumber=512;
     this.identity=0;
     this.inputManager.on('restart',this.restart.bind(this));
     this.setup();
@@ -271,7 +333,10 @@ function GameManager(size,InputManager,Actuator,StorageManager){
 GameManager.prototype.setup=function(){
     for(var i=0;i<4;i++){
         for(var j=0;j<4;j++){
-            var tile=new Tile({x:i,y:j},128);
+            if(i==0&&j>0&&j!=3){
+                continue;
+            }
+            var tile=new Tile({x:j,y:i},this.startNumber);
             this.actuator.addTile(tile,this);
         }
     }
@@ -286,7 +351,7 @@ GameManager.prototype.split= function (event) {
     var splitElements=this.grid.getSplitElements(tile);
     if(splitElements){
         splitElements.forEach(function(element){
-            self.actuator.removeTile(id);
+            self.actuator.removeTile(id,self);
             self.actuator.addTile(element,self);
             self.actuator.fireTile(element,self);
         });
@@ -298,7 +363,8 @@ GameManager.prototype.split= function (event) {
 ;/**
  * Created by amitkum on 18/7/15.
  */
-var game=null;
+var size=4;
+var game;
 window.requestAnimationFrame(function () {
-    game=new GameManager(4,InputManager,1,1);
+    game=new GameManager(size,InputManager,1,1);
 });

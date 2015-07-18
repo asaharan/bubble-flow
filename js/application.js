@@ -1,7 +1,8 @@
 /**
  * Created by amitkum on 18/7/15.
  */
-var game=null;
+var size=4;
+var game;
 window.requestAnimationFrame(function () {
-    game=new GameManager(4,InputManager,1,1);
+    game=new GameManager(size,InputManager,1,1);
 });
