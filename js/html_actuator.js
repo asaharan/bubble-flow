@@ -15,7 +15,11 @@ HTMLActuator.prototype.fireTile= function (tile,parent) {
         //no one to catch so throwing tile
         this.eatUp(tile,parent);
     }else{
+        var tilePresentThere=parent.grid.findTileByPosition(nextPosition);
+        tile.nextValue=tile.value+tilePresentThere.value;
+        this.removeTile(tilePresentThere.element_id,parent);
         this.moveTile(tile,nextPosition,parent);
+        //console.log('removing ',tilePresentThere,' adding to ',tile);
     }
 };
 HTMLActuator.prototype.eatUp=function(tile,parent){
@@ -125,12 +129,19 @@ HTMLActuator.prototype.moveTile= function (tile, nextPosition) {
     this.updateClasses(tileElement,this.positionClass(nextPosition));
     tile.x=nextPosition.x;
     tile.y=nextPosition.y;
+    tile.value=tile.nextValue;
+    this.applyValue(tile);
 };
 HTMLActuator.prototype.updateClasses= function (element, classToUpdate) {
-    var  self=this;
+    var self=this;
     var elementClassList=element.className.split(' ');
     elementClassList[2]=classToUpdate;
     window.requestAnimationFrame(function () {
         self.applyClasses(element,elementClassList);
     });
+};
+HTMLActuator.prototype.applyValue= function (tile) {
+    var element=document.querySelector('#tile-'+tile.element_id+' > div.inner');
+    element.textContent=tile.nextValue;
+    console.log(element);
 };

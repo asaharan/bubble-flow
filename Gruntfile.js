@@ -25,13 +25,15 @@ module.exports = function(grunt) {
                 }
 		    },
 		    dist: {
-		    	src: ['js/grid.js','js/input_manager.js','js/html_actuator.js','js/tile.js','js/game_manager.js','js/application.js'],
+		    	src: ['js/animation_polyfill.js','js/grid.js','js/input_manager.js','js/html_actuator.js','js/tile.js','js/game_manager.js','js/application.js'],
 		      	dest: 'build/game.js',
 		    },
 		},
         uglify:{
             options: {
-                mangle: false
+                banner:"/*!\n * BubbleUp\n * http://github.com/asaharan/bubbleUp\n * @licence MIT\n*/\n'use strict';\n",
+                mangle: false,
+                sourceMap:true,
             },
             my_target:{
                 files: {

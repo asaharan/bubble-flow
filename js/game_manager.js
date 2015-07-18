@@ -17,9 +17,9 @@ function GameManager(size,InputManager,Actuator,StorageManager){
 GameManager.prototype.setup=function(){
     for(var i=0;i<4;i++){
         for(var j=0;j<4;j++){
-            if(i==0&&j>0&&j!=3){
-                continue;
-            }
+            //if(i==0&&j>0&&j!=3){
+            //    continue;
+            //}
             var tile=new Tile({x:j,y:i},this.startNumber);
             this.actuator.addTile(tile,this);
         }

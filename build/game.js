@@ -5,6 +5,36 @@
 */
 'use strict';
 /*!
+ * js/animation_polyfill.js
+*/
+/**
+ * Created by amitkum on 19/7/15.
+ */
+(function() {
+    var lastTime = 0;
+    var vendors = ['webkit', 'moz'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame =
+            window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+                timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());;
+/*!
  * js/grid.js
 */
 /**
@@ -184,7 +214,11 @@ HTMLActuator.prototype.fireTile= function (tile,parent) {
         //no one to catch so throwing tile
         this.eatUp(tile,parent);
     }else{
+        var tilePresentThere=parent.grid.findTileByPosition(nextPosition);
+        tile.nextValue=tile.value+tilePresentThere.value;
+        this.removeTile(tilePresentThere.element_id,parent);
         this.moveTile(tile,nextPosition,parent);
+        //console.log('removing ',tilePresentThere,' adding to ',tile);
     }
 };
 HTMLActuator.prototype.eatUp=function(tile,parent){
@@ -294,14 +328,21 @@ HTMLActuator.prototype.moveTile= function (tile, nextPosition) {
     this.updateClasses(tileElement,this.positionClass(nextPosition));
     tile.x=nextPosition.x;
     tile.y=nextPosition.y;
+    tile.value=tile.nextValue;
+    this.applyValue(tile);
 };
 HTMLActuator.prototype.updateClasses= function (element, classToUpdate) {
-    var  self=this;
+    var self=this;
     var elementClassList=element.className.split(' ');
     elementClassList[2]=classToUpdate;
     window.requestAnimationFrame(function () {
         self.applyClasses(element,elementClassList);
     });
+};
+HTMLActuator.prototype.applyValue= function (tile) {
+    var element=document.querySelector('#tile-'+tile.element_id+' > div.inner');
+    element.textContent=tile.nextValue;
+    console.log(element);
 };;
 /*!
  * js/tile.js
@@ -316,6 +357,8 @@ function Tile(position,value){
     this.firedFrom=null;
     this.fireDirection=null;
     this.element_id=null;
+    this.previousValue=null;
+    this.nextValue=value;
 }
 Tile.prototype.savePosition=function(){
     this.previousPosition={x:this.x,y:this.y};
@@ -358,9 +401,9 @@ function GameManager(size,InputManager,Actuator,StorageManager){
 GameManager.prototype.setup=function(){
     for(var i=0;i<4;i++){
         for(var j=0;j<4;j++){
-            if(i==0&&j>0&&j!=3){
-                continue;
-            }
+            //if(i==0&&j>0&&j!=3){
+            //    continue;
+            //}
             var tile=new Tile({x:j,y:i},this.startNumber);
             this.actuator.addTile(tile,this);
         }
