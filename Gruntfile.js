@@ -17,13 +17,28 @@ module.exports = function(grunt) {
 		},
 		concat: {
 			options: {
-				separator: ';',
+				banner:"/*!\n * BubbleUp\n * http://github.com/asaharan/bubbleUp\n * @licence MIT\n*/\n'use strict';\n",
+				separator: ';\n',
+                stripBanner:true,
+                process: function(src, filepath) {
+                    return '/*!\n * ' + filepath + '\n*/\n' + src;
+                }
 		    },
 		    dist: {
 		    	src: ['js/grid.js','js/input_manager.js','js/html_actuator.js','js/tile.js','js/game_manager.js','js/application.js'],
 		      	dest: 'build/game.js',
 		    },
 		},
+        uglify:{
+            options: {
+                mangle: false
+            },
+            my_target:{
+                files: {
+                    'build/game.min.js': ['build/game.js']
+                }
+            }
+        },
 		sass:{
 			options: {
 				sourceMap: true
@@ -35,9 +50,10 @@ module.exports = function(grunt) {
 			}
 		},
 	});
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-bower-concat');
 	require('load-grunt-tasks')(grunt);
-	grunt.registerTask('default',['sass','bower_concat','concat','watch'])
+	grunt.registerTask('default',['sass','bower_concat','concat','uglify','watch'])
 }

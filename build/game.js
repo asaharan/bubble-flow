@@ -1,3 +1,12 @@
+/*!
+ * BubbleUp
+ * http://github.com/asaharan/bubbleUp
+ * @licence MIT
+*/
+'use strict';
+/*!
+ * js/grid.js
+*/
 /**
  * Created by amitkum on 18/7/15.
  */
@@ -103,7 +112,11 @@ Grid.prototype.isEdge= function (tile) {
         return [directions.top,directions.right,directions.left];
     }
 
-};;/**
+};;
+/*!
+ * js/input_manager.js
+*/
+/**
  * Created by amitkum on 18/7/15.
  */
 function InputManager(){
@@ -150,7 +163,11 @@ InputManager.prototype.bindButtonPress= function (selector,fn) {
     //console.log(selector+' binded with \n'+fn);
     button.addEventListener("click", fn.bind(this));
     button.addEventListener(this.eventTouchend, fn.bind(this));
-};;/**
+};;
+/*!
+ * js/html_actuator.js
+*/
+/**
  * Created by amitkum on 18/7/15.
  */
 function HTMLActuator(){
@@ -285,7 +302,11 @@ HTMLActuator.prototype.updateClasses= function (element, classToUpdate) {
     window.requestAnimationFrame(function () {
         self.applyClasses(element,elementClassList);
     });
-};;/**
+};;
+/*!
+ * js/tile.js
+*/
+/**
  * Created by amitkum on 18/7/15.
  */
 function Tile(position,value){
@@ -314,7 +335,11 @@ Tile.prototype.serialize = function () {
 };
 Tile.prototype.fireIt = function (direction) {
 
-};;/**
+};;
+/*!
+ * js/game_manager.js
+*/
+/**
  * Created by amitkum on 18/7/15.
  */
 const directions={up:1, right:2, down:3, left:4};
@@ -360,7 +385,11 @@ GameManager.prototype.split= function (event) {
     //var newTile=new Tile({x:id,y:1},256);
     //this.actuator.addTile(newTile,this);
 };
-;/**
+;
+/*!
+ * js/application.js
+*/
+/**
  * Created by amitkum on 18/7/15.
  */
 var size=4;
