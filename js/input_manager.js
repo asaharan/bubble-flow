@@ -16,9 +16,9 @@ function InputManager(){
     this.listen();
 }
 InputManager.prototype.restart=function(event){
+    event.stopPropagation();
     event.preventDefault();
     this.emit('restart');
-    console.log('restart');
 };
 InputManager.prototype.on= function (event,callback) {
     if(!this.events[event]){
@@ -37,12 +37,12 @@ InputManager.prototype.emit= function (event,data) {
 };
 InputManager.prototype.listen= function () {
     var self=this;
-
+    var tile=document.querySelector('.tile');
     this.bindButtonPress('.newGame',this.restart);
 };
 InputManager.prototype.bindButtonPress= function (selector,fn) {
     var button = document.querySelector(selector);
-    console.log('button binded'+selector,fn);
+    //console.log(selector+' binded with \n'+fn);
     button.addEventListener("click", fn.bind(this));
     button.addEventListener(this.eventTouchend, fn.bind(this));
 };

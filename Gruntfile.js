@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 				separator: ';',
 		    },
 		    dist: {
-		    	src: ['js/input_manager.js','js/html_actuator.js','js/tile.js','js/game_manager.js','js/application.js'],
+		    	src: ['js/grid.js','js/input_manager.js','js/html_actuator.js','js/tile.js','js/game_manager.js','js/application.js'],
 		      	dest: 'build/game.js',
 		    },
 		},

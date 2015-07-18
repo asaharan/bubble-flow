@@ -3,6 +3,7 @@ $roboto-font-path: '../com/roboto-fontface/fonts';
 @import "bourbon/bourbon";
 @import "variables";
 @import "base";
+@import "animations";
 div.gameContainer{
   font-family: "roboto";
   //width:$gameWidth;
@@ -44,7 +45,10 @@ div.gameContainer{
       position: absolute;
       left: 0;
       top: 0;
-      div{
+      .tile{
+        &.new{
+          @include animation(addNewAnimation 400ms $ease-in-out-quart);
+        }
         @include transition(all 1000ms $ease-in-out-quart);
         position: absolute;
         width: $tileWidth;
@@ -55,6 +59,26 @@ div.gameContainer{
         border-radius: 3px;
         font-weight: bold;
         background-color: $fillTileColor;
+        @for $i from 0 through 4{
+          @for $j from 0 through 4{
+            &.tile-position-#{$i}-#{$j}{
+              left: $i*$tileWidth + $i * 15px;
+              top: $j*$tileWidth + $j * 15px;
+            }
+          }
+        }
+        .inner{
+          position: absolute;
+          width: inherit;
+          height: inherit;
+          left: 0;
+          top: 0;
+          z-index: 5;
+        }
+        .clicker{
+          @extend .inner;
+          z-index: 10;
+        }
       }
     }
   }
