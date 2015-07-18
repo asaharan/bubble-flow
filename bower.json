@@ -1,0 +1,28 @@
+{
+  "name": "puck",
+  "version": "0.0.0",
+  "authors": [
+    "Amit Saharan <asaharan812@gmail.com>"
+  ],
+  "description": "Puck-Puck the game",
+  "main": "index.html",
+  "keywords": [
+    "Puck",
+    "game",
+    "amit",
+    "saharan"
+  ],
+  "license": "MIT",
+  "homepage": "http://home.iitk.ac.in/~amitkum/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "com",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "roboto-fontface": "~0.4.3"
+  }
+}

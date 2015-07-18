@@ -1,0 +1,61 @@
+$roboto-font-path: '../com/roboto-fontface/fonts';
+@import "../com/roboto-fontface/css/roboto-fontface.scss";
+@import "bourbon/bourbon";
+@import "variables";
+@import "base";
+div.gameContainer{
+  font-family: "roboto";
+  //width:$gameWidth;
+  display:inline-block;
+  color:$gameColor;
+}
+.gameGridContainer{
+  position: relative;
+  width:$gameGridContainerWidth;
+  padding:$spaceBetweenTiles;
+  background-color:$gameGridContainerBackgroundColor;
+  border-radius: 5px;
+  .gameContainerInner{
+    position: relative;
+    .gameGrid{
+      color: #ffffff;
+      .row{
+        //width: 200px;
+        @extend .clear;
+        margin-top: $tileMargin;
+        &:first-child{
+          margin-top: 0;
+        }
+        div{
+          border-radius: 3px;
+          margin-left: $tileMargin;
+          float: left;
+          display: inline-block;
+          width: $tileWidth;
+          height: $tileWidth;
+          background-color: $emptyTileColor;
+          &:first-child{
+            margin-left: 0;
+          }
+        }
+      }
+    }
+    .tileContainer{
+      position: absolute;
+      left: 0;
+      top: 0;
+      div{
+        @include transition(all 1000ms $ease-in-out-quart);
+        position: absolute;
+        width: $tileWidth;
+        height: $tileWidth;
+        line-height: $tileWidth;
+        text-align: center;
+        font-size: 30px;
+        border-radius: 3px;
+        font-weight: bold;
+        background-color: $fillTileColor;
+      }
+    }
+  }
+}
