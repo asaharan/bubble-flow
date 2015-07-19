@@ -8,7 +8,7 @@ function GameManager(size,InputManager,Actuator,StorageManager){
     this.storageManager=new StorageManager;
     this.actuator=new Actuator;
     this.grid=new Grid;
-    this.startNumber=512;
+    this.startNumber=4;
     this.identity=0;
     this.fixTile=null;
     this.inTheWay=0;
@@ -81,14 +81,14 @@ GameManager.prototype.fireComplete=function(){//whwn fired tiles reaches its pos
         this.gameOver=this.grid.isGameOver(this);
     }
 };
-GameManager.prototype.updateScore= function (isStartOfgame) {
+GameManager.prototype.updateScore= function (isStartOfGame) {
     var currentScore=this.grid.currentScore(this);
     var previousScore=this.storageManager.currentScore();
     if(previousScore!=currentScore){
         this.actuator.setCurrentScore(currentScore,previousScore);
         this.storageManager.currentScore(currentScore);
     }
-    if(isStartOfgame){
+    if(isStartOfGame){
         this.actuator.setBestScore(this.storageManager.bestScore());
         this.actuator.setCurrentScore(currentScore,currentScore);
         return;

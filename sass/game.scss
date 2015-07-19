@@ -9,7 +9,6 @@ div.gameContainer{
   //width:$gameWidth;
   display:inline-block;
   color:$gameColor;
-  @include user-select(none);
   .head{
     margin-bottom: 15px;
     .nameAndScore{
@@ -105,6 +104,7 @@ div.gameContainer{
   }
 }
 .gameGridContainer{
+  @include user-select(none);
   position: relative;
   width:$gameGridContainerWidth;
   padding:$spaceBetweenTiles;
