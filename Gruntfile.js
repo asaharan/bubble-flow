@@ -17,7 +17,7 @@ module.exports = function(grunt) {
 		},
 		concat: {
 			options: {
-				banner:"/*!\n * BubbleUp\n * http://github.com/asaharan/bubbleUp\n * @licence MIT\n*/\n'use strict';\n",
+				banner:"/*!\n * BubbleUp\n * http://github.com/asaharan/bubbleUp\n * @licence MIT\n*/\n",
 				separator: ';\n',
                 stripBanner:true,
                 process: function(src, filepath) {
@@ -25,7 +25,7 @@ module.exports = function(grunt) {
                 }
 		    },
 		    dist: {
-		    	src: ['js/animation_polyfill.js','js/grid.js','js/input_manager.js','js/html_actuator.js','js/tile.js','js/game_manager.js','js/application.js'],
+		    	src: ['js/storage_manager.js','js/grid.js','js/input_manager.js','js/html_actuator.js','js/tile.js','js/game_manager.js','js/application.js'],
 		      	dest: 'build/game.js',
 		    },
 		},

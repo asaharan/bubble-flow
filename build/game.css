@@ -143,7 +143,9 @@
   src: url("../com/roboto-fontface/fonts/Roboto-BlackItalic.eot?#iefix") format("embedded-opentype"), url("../com/roboto-fontface/fonts/Roboto-BlackItalic.woff2") format("woff2"), url("../com/roboto-fontface/fonts/Roboto-BlackItalic.woff") format("woff"), url("../com/roboto-fontface/fonts/Roboto-BlackItalic.ttf") format("truetype"), url("../com/roboto-fontface/fonts/Roboto-BlackItalic.svg#Roboto") format("svg"); }
 
 body {
-  margin: 0; }
+  text-align: center;
+  margin: 0;
+  background: #fff; }
 
 a {
   color: inherit;
@@ -152,7 +154,7 @@ a {
 *, *:after, *:before {
   box-sizing: border-box; }
 
-.clear:after, .gameGridContainer .gameContainerInner .gameGrid .row:after {
+.clear:after, div.gameContainer .head .nameAndScore:after, div.gameContainer .head .descContainer:after, .gameGridContainer .gameContainerInner .gameGrid .row:after {
   content: " ";
   display: table;
   clear: both; }
@@ -197,13 +199,88 @@ div.gameContainer {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none; }
+  div.gameContainer .head {
+    margin-bottom: 15px; }
+    div.gameContainer .head .nameAndScore {
+      display: block;
+      margin: 15px 0; }
+      div.gameContainer .head .nameAndScore .gameName {
+        text-align: left;
+        float: left;
+        display: inline-block;
+        width: 40%;
+        height: 45px;
+        line-height: 45px;
+        vertical-align: middle;
+        color: #888888;
+        font-family: 'roboto', 'sans-serif';
+        font-size: 30px;
+        font-weight: bold; }
+      div.gameContainer .head .nameAndScore .scores {
+        display: inline-block;
+        float: right;
+        line-height: 45px; }
+        div.gameContainer .head .nameAndScore .scores .scoreContainer, div.gameContainer .head .nameAndScore .scores .currentScoreContainer, div.gameContainer .head .nameAndScore .scores .bestScoreContainer {
+          height: 50px;
+          margin-top: 3px;
+          line-height: normal;
+          float: left;
+          background-color: #f5f5f5;
+          color: #777;
+          border: solid 1px #eaeaea;
+          border-radius: 3px;
+          padding: 5px 20px; }
+        div.gameContainer .head .nameAndScore .scores .scoreTexts, div.gameContainer .head .nameAndScore .scores .currentScoreContainer .currentScore, div.gameContainer .head .nameAndScore .scores .bestScoreContainer .bestScore {
+          font-weight: bold; }
+        div.gameContainer .head .nameAndScore .scores .currentScoreContainer {
+          position: relative;
+          margin-right: 10px; }
+          div.gameContainer .head .nameAndScore .scores .currentScoreContainer .currentScoreUpdater {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            z-index: 5;
+            font-weight: bold;
+            -webkit-transition: top 300ms linear;
+            -moz-transition: top 300ms linear;
+            transition: top 300ms linear; }
+    div.gameContainer .head .descContainer {
+      text-shadow: 2px 1px 1px #d8d8d8; }
+      div.gameContainer .head .descContainer .description {
+        text-align: left;
+        float: left;
+        line-height: 40px;
+        vertical-align: baseline; }
+      div.gameContainer .head .descContainer .newGame {
+        outline: none;
+        cursor: pointer;
+        float: right;
+        border: solid 1px #e5e5e5;
+        background-color: #ffffff;
+        color: #999;
+        width: 135px;
+        text-align: center;
+        height: 40px;
+        line-height: 38px;
+        vertical-align: middle;
+        font-size: 18px;
+        border-radius: 3px;
+        font-family: roboto;
+        -webkit-transition: all 300ms cubic-bezier(0.77, 0, 0.175, 1);
+        -moz-transition: all 300ms cubic-bezier(0.77, 0, 0.175, 1);
+        transition: all 300ms cubic-bezier(0.77, 0, 0.175, 1);
+        box-shadow: 0 0 1px 1px #f1f1f1, inset 0 0 0 1px #f9f9f9; }
 
 .gameGridContainer {
   position: relative;
-  width: 500px;
+  width: 502px;
   padding: 15px;
-  background-color: #BBADA0;
-  border-radius: 5px; }
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  border: solid 1px #d8d8d8; }
   .gameGridContainer .gameContainerInner {
     position: relative; }
     .gameGridContainer .gameContainerInner .gameGrid {
@@ -213,13 +290,17 @@ div.gameContainer {
         .gameGridContainer .gameContainerInner .gameGrid .row:first-child {
           margin-top: 0; }
         .gameGridContainer .gameContainerInner .gameGrid .row div {
-          border-radius: 3px;
+          -webkit-border-radius: 50%;
+          -moz-border-radius: 50%;
+          border-radius: 50%;
           margin-left: 15px;
           float: left;
           display: inline-block;
           width: 106.25px;
           height: 106.25px;
-          background-color: #CDC1B4; }
+          background-image: -webkit-radial-gradient(42% 54%, circle, transparent 0%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.9) 75%, rgba(255, 255, 255, 0.9) 100%);
+          background-image: -moz-radial-gradient(42% 54%, circle, transparent 0%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.9) 75%, rgba(255, 255, 255, 0.9) 100%);
+          background-image: radial-gradient(42% 54%, circle, transparent 0%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.9) 75%, rgba(255, 255, 255, 0.9) 100%); }
           .gameGridContainer .gameContainerInner .gameGrid .row div:first-child {
             margin-left: 0; }
     .gameGridContainer .gameContainerInner .tileContainer {
@@ -239,6 +320,10 @@ div.gameContainer {
         border-radius: 3px;
         font-weight: bold;
         background-color: #fff; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.fixed {
+          -webkit-box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.96), inset 0 0 0 1px #d57b7b;
+          -moz-box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.96), inset 0 0 0 1px #d57b7b;
+          box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.96), inset 0 0 0 1px #d57b7b; }
         .gameGridContainer .gameContainerInner .tileContainer .tile.new {
           -webkit-animation: addNewAnimation 400ms cubic-bezier(0.77, 0, 0.175, 1);
           -moz-animation: addNewAnimation 400ms cubic-bezier(0.77, 0, 0.175, 1);
@@ -258,6 +343,24 @@ div.gameContainer {
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-0-4 {
           left: 0px;
           top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-0-5 {
+          left: 0px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-0-6 {
+          left: 0px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-0-7 {
+          left: 0px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-0-8 {
+          left: 0px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-0-9 {
+          left: 0px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-0-10 {
+          left: 0px;
+          top: 1212.5px; }
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-0 {
           left: 121.25px;
           top: 0px; }
@@ -273,6 +376,24 @@ div.gameContainer {
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-4 {
           left: 121.25px;
           top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-5 {
+          left: 121.25px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-6 {
+          left: 121.25px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-7 {
+          left: 121.25px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-8 {
+          left: 121.25px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-9 {
+          left: 121.25px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-1-10 {
+          left: 121.25px;
+          top: 1212.5px; }
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-0 {
           left: 242.5px;
           top: 0px; }
@@ -288,6 +409,24 @@ div.gameContainer {
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-4 {
           left: 242.5px;
           top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-5 {
+          left: 242.5px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-6 {
+          left: 242.5px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-7 {
+          left: 242.5px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-8 {
+          left: 242.5px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-9 {
+          left: 242.5px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-2-10 {
+          left: 242.5px;
+          top: 1212.5px; }
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-0 {
           left: 363.75px;
           top: 0px; }
@@ -303,6 +442,24 @@ div.gameContainer {
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-4 {
           left: 363.75px;
           top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-5 {
+          left: 363.75px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-6 {
+          left: 363.75px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-7 {
+          left: 363.75px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-8 {
+          left: 363.75px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-9 {
+          left: 363.75px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-3-10 {
+          left: 363.75px;
+          top: 1212.5px; }
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-0 {
           left: 485px;
           top: 0px; }
@@ -318,6 +475,222 @@ div.gameContainer {
         .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-4 {
           left: 485px;
           top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-5 {
+          left: 485px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-6 {
+          left: 485px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-7 {
+          left: 485px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-8 {
+          left: 485px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-9 {
+          left: 485px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-4-10 {
+          left: 485px;
+          top: 1212.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-0 {
+          left: 606.25px;
+          top: 0px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-1 {
+          left: 606.25px;
+          top: 121.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-2 {
+          left: 606.25px;
+          top: 242.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-3 {
+          left: 606.25px;
+          top: 363.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-4 {
+          left: 606.25px;
+          top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-5 {
+          left: 606.25px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-6 {
+          left: 606.25px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-7 {
+          left: 606.25px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-8 {
+          left: 606.25px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-9 {
+          left: 606.25px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-5-10 {
+          left: 606.25px;
+          top: 1212.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-0 {
+          left: 727.5px;
+          top: 0px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-1 {
+          left: 727.5px;
+          top: 121.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-2 {
+          left: 727.5px;
+          top: 242.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-3 {
+          left: 727.5px;
+          top: 363.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-4 {
+          left: 727.5px;
+          top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-5 {
+          left: 727.5px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-6 {
+          left: 727.5px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-7 {
+          left: 727.5px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-8 {
+          left: 727.5px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-9 {
+          left: 727.5px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-6-10 {
+          left: 727.5px;
+          top: 1212.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-0 {
+          left: 848.75px;
+          top: 0px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-1 {
+          left: 848.75px;
+          top: 121.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-2 {
+          left: 848.75px;
+          top: 242.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-3 {
+          left: 848.75px;
+          top: 363.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-4 {
+          left: 848.75px;
+          top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-5 {
+          left: 848.75px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-6 {
+          left: 848.75px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-7 {
+          left: 848.75px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-8 {
+          left: 848.75px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-9 {
+          left: 848.75px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-7-10 {
+          left: 848.75px;
+          top: 1212.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-0 {
+          left: 970px;
+          top: 0px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-1 {
+          left: 970px;
+          top: 121.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-2 {
+          left: 970px;
+          top: 242.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-3 {
+          left: 970px;
+          top: 363.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-4 {
+          left: 970px;
+          top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-5 {
+          left: 970px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-6 {
+          left: 970px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-7 {
+          left: 970px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-8 {
+          left: 970px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-9 {
+          left: 970px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-8-10 {
+          left: 970px;
+          top: 1212.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-0 {
+          left: 1091.25px;
+          top: 0px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-1 {
+          left: 1091.25px;
+          top: 121.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-2 {
+          left: 1091.25px;
+          top: 242.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-3 {
+          left: 1091.25px;
+          top: 363.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-4 {
+          left: 1091.25px;
+          top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-5 {
+          left: 1091.25px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-6 {
+          left: 1091.25px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-7 {
+          left: 1091.25px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-8 {
+          left: 1091.25px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-9 {
+          left: 1091.25px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-9-10 {
+          left: 1091.25px;
+          top: 1212.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-0 {
+          left: 1212.5px;
+          top: 0px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-1 {
+          left: 1212.5px;
+          top: 121.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-2 {
+          left: 1212.5px;
+          top: 242.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-3 {
+          left: 1212.5px;
+          top: 363.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-4 {
+          left: 1212.5px;
+          top: 485px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-5 {
+          left: 1212.5px;
+          top: 606.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-6 {
+          left: 1212.5px;
+          top: 727.5px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-7 {
+          left: 1212.5px;
+          top: 848.75px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-8 {
+          left: 1212.5px;
+          top: 970px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-9 {
+          left: 1212.5px;
+          top: 1091.25px; }
+        .gameGridContainer .gameContainerInner .tileContainer .tile.tile-position-10-10 {
+          left: 1212.5px;
+          top: 1212.5px; }
         .gameGridContainer .gameContainerInner .tileContainer .tile .inner, .gameGridContainer .gameContainerInner .tileContainer .tile .clicker {
           position: absolute;
           width: inherit;

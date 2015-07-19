@@ -1,0 +1,10 @@
+@include keyframes(addNewAnimation){
+  0%{
+    opacity: 0.2;
+    @include transform(scale(0.2));
+  }
+  100%{
+    @include transform(none);
+    opacity: 1;
+  }
+}

@@ -3,37 +3,47 @@
  * http://github.com/asaharan/bubbleUp
  * @licence MIT
 */
-'use strict';
 /*!
- * js/animation_polyfill.js
+ * js/storage_manager.js
 */
 /**
  * Created by amitkum on 19/7/15.
  */
-(function() {
-    var lastTime = 0;
-    var vendors = ['webkit', 'moz'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame =
-            window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+function StorageManager(){
+    this.prefix='bubble';
+    this.localStorage=window.localStorage;
+}
+StorageManager.prototype.set= function (what,value) {
+    this.localStorage[what]=value;
+};
+StorageManager.prototype.get= function (what) {
+    return this.localStorage[what];
+};
+
+StorageManager.prototype.bestScore= function (score) {
+    var bestScoreString='bestScore';
+    if(score!=null||score!=undefined){
+        this.set(bestScoreString,score);
+    }else{
+        var bestScore= parseInt(this.get(bestScoreString));
+        if(bestScore % 1 ===0){
+            return bestScore;
+        }
+        return 0;
     }
-
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-                timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-}());;
+};
+StorageManager.prototype.currentScore=function(score){
+    var currentScoreString='currentScore';
+    if(score!=null||score!=undefined){
+        this.set(currentScoreString,score);
+    }else{
+        var currentScore= parseInt(this.get(currentScoreString));
+        if(currentScore% 1 ===0){
+            return currentScore;
+        }
+        return 0;
+    }
+};;
 /*!
  * js/grid.js
 */
@@ -43,6 +53,9 @@
 function Grid(){
     this.grid=[];
 }
+Grid.prototype.clearContainer= function () {
+    this.grid=[];
+};
 Grid.prototype.addTile= function (tile) {
     this.grid.push(tile);
 };
@@ -111,13 +124,13 @@ Grid.prototype.isCorner= function (tile) {
     if(tile.x==0&&tile.y==0){
         return [directions.right,directions.down];
     }
-    if(tile.x==3&&tile.y==0){
+    if(tile.x==size-1&&tile.y==0){
         return [directions.left,directions.down];
     }
-    if(tile.x==0&&tile.y==3){
+    if(tile.x==0&&tile.y==size-1){
         return [directions.right,directions.up];
     }
-    if(tile.x==3&&tile.y==3){
+    if(tile.x==size-1&&tile.y==size-1){
         return [directions.left,directions.up];
     }
     return false;
@@ -129,18 +142,44 @@ Grid.prototype.isCenter=function(tile){
     return false;
 };
 Grid.prototype.isEdge= function (tile) {
-    if(tile.x==0&&(tile.y==1||tile.y==2)){//left edge
+    if(tile.x==0&&(tile.y>0&&tile.y<size-1)){//left edge
         return [directions.up,directions.right,directions.down];
     }
-    if(tile.x==3&&(tile.y==1||tile.y==2)){//right edge
+    if(tile.x==size-1&&(tile.y>0&&tile.y<size-1)){//right edge
         return [directions.up,directions.down,directions.left];
     }
-    if(tile.y==0&&(tile.x==1||tile.x==2)){//top edge
+    if(tile.y==0&&(tile.x>0&&tile.x<size-1)){//top edge
         return [directions.right,directions.down,directions.left];
     }
-    if(tile.y==3&&(tile.x==1||tile.x==2)){//bottom edge
-        return [directions.top,directions.right,directions.left];
+    if(tile.y==size-1&&(tile.x>0&&tile.x<size-1)){//bottom edge
+        return [directions.up, directions.right, directions.left];
     }
+};
+Grid.prototype.currentScore= function (parent) {
+    var currentScore=0;
+    this.grid.forEach(function (tile) {
+        if(tile.isFixed(parent)){
+            currentScore=tile.value;
+        }
+    });
+    return currentScore;
+};
+Grid.prototype.isGameOver= function (parent) {
+    var fixTile=parent.fixTile;
+    console.log(fixTile);
+    var i,count=0;
+    for(i=0;i<size;i++){
+        if(this.findTileByPosition({x:i,y:fixTile.y})!=null){
+            count++;
+        }
+        if(this.findTileByPosition({x:fixTile.x,y:i})!=null){
+            count++;
+        }
+        if(count>2){
+            return false;
+        }
+    }
+    return true;
 
 };;
 /*!
@@ -175,7 +214,6 @@ InputManager.prototype.on= function (event,callback) {
     this.events[event].push(callback);
 };
 InputManager.prototype.emit= function (event,data) {
-    console.log(event,data,'emited');
     var callbacks=this.events[event];
     if(callbacks){
         callbacks.forEach(function (callback) {
@@ -201,9 +239,13 @@ InputManager.prototype.bindButtonPress= function (selector,fn) {
  * Created by amitkum on 18/7/15.
  */
 function HTMLActuator(){
+    this.events={};
     this.gameContainer=document.querySelector('.gameContainer');
     this.gameContainerInner=document.querySelector('.gameContainerInner');
     this.tileContainer=document.querySelector('.tileContainer');
+    this.currentScoreContainer=document.querySelector('.currentScore');
+    this.bestScoreContainer=document.querySelector('.bestScore');
+    this.currentScoreUpdater=document.querySelector('.currentScoreUpdater');
 }
 HTMLActuator.prototype.fireTile= function (tile,parent) {
     var init={};
@@ -218,11 +260,14 @@ HTMLActuator.prototype.fireTile= function (tile,parent) {
         tile.nextValue=tile.value+tilePresentThere.value;
         this.removeTile(tilePresentThere.element_id,parent);
         this.moveTile(tile,nextPosition,parent);
-        //console.log('removing ',tilePresentThere,' adding to ',tile);
     }
 };
 HTMLActuator.prototype.eatUp=function(tile,parent){
     this.removeTile(tile.element_id,parent);
+    this.emit('fireComplete');
+};
+HTMLActuator.prototype.clearContainer= function () {
+    this.tileContainer.textContent='';
 };
 HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
     var toMerge=null;
@@ -264,7 +309,8 @@ HTMLActuator.prototype.findNextPosition= function (position, dir,parent) {
         return null;
     }
 };
-HTMLActuator.prototype.addTile= function (tile,parent) {
+HTMLActuator.prototype.addTile= function (tile,parent,newTile) {
+    newTile= newTile== true;
     var wrapper=document.createElement('div');
     var inner=document.createElement('div');
     var clicker=document.createElement('div');
@@ -276,7 +322,10 @@ HTMLActuator.prototype.addTile= function (tile,parent) {
 
     var position=tile.previousPosition||{x:tile.x,y:tile.y};
     var positionClass=this.positionClass(position);
-    var classes=['tile','tile'+this.valueClass(tile.value),positionClass,'new'];
+    var classes=['tile','tile'+this.valueClass(tile.value),positionClass];
+    if(newTile){
+        classes.push('new');
+    }
     this.applyClasses(wrapper,classes);
 
     var id=this.uniqueIdentity(parent);
@@ -329,6 +378,7 @@ HTMLActuator.prototype.moveTile= function (tile, nextPosition) {
     tile.x=nextPosition.x;
     tile.y=nextPosition.y;
     tile.value=tile.nextValue;
+    this.emit('fireComplete');
     this.applyValue(tile);
 };
 HTMLActuator.prototype.updateClasses= function (element, classToUpdate) {
@@ -342,7 +392,37 @@ HTMLActuator.prototype.updateClasses= function (element, classToUpdate) {
 HTMLActuator.prototype.applyValue= function (tile) {
     var element=document.querySelector('#tile-'+tile.element_id+' > div.inner');
     element.textContent=tile.nextValue;
-    console.log(element);
+};
+
+HTMLActuator.prototype.on= function (event,callback) {
+    if(!this.events[event]){
+        this.events[event]=[];
+    }
+    this.events[event].push(callback);
+};
+HTMLActuator.prototype.emit= function (event,data) {
+    var callbacks=this.events[event];
+    if(callbacks){
+        callbacks.forEach(function (callback) {
+            callback(data);
+        })
+    }
+};
+HTMLActuator.prototype.setCurrentScore= function (score,previousScore) {
+    var self=this;
+    this.currentScoreContainer.textContent=score;
+    var updateScore=score-previousScore;
+    if(updateScore>0&&updateScore%1===0){
+        this.currentScoreUpdater.textContent='+'+updateScore;
+        this.currentScoreUpdater.style.opacity=1;
+        this.currentScoreUpdater.style.top='-20px';
+        setTimeout(function () {
+            self.currentScoreUpdater.setAttribute('style',' ');
+        },300);
+    }
+};
+HTMLActuator.prototype.setBestScore= function (score) {
+    this.bestScoreContainer.textContent=score;
 };;
 /*!
  * js/tile.js
@@ -378,6 +458,12 @@ Tile.prototype.serialize = function () {
 };
 Tile.prototype.fireIt = function (direction) {
 
+};
+Tile.prototype.isFixed= function (parent) {
+    if(parent.fixTile.x==this.x&&parent.fixTile.y==this.y){
+        return true;
+    }
+    return false;
 };;
 /*!
  * js/game_manager.js
@@ -389,43 +475,100 @@ const directions={up:1, right:2, down:3, left:4};
 function GameManager(size,InputManager,Actuator,StorageManager){
     this.size=size;
     this.inputManager=new InputManager;
-    this.storagemanager=StorageManager;
-    this.actuator=new HTMLActuator;
+    this.storageManager=new StorageManager;
+    this.actuator=new Actuator;
     this.grid=new Grid;
     this.startNumber=512;
     this.identity=0;
+    this.fixTile=null;
+    this.inTheWay=0;
+    this.gameOver=false;
     this.inputManager.on('restart',this.restart.bind(this));
+    this.actuator.on('fireComplete',this.fireComplete.bind(this));
     this.setup();
 }
 
 GameManager.prototype.setup=function(){
-    for(var i=0;i<4;i++){
-        for(var j=0;j<4;j++){
+    this.gameOver=false;
+    this.actuator.clearContainer();
+    this.grid.clearContainer();
+    for(var i=0;i<this.size;i++){
+        for(var j=0;j<this.size;j++){
             var tile=new Tile({x:j,y:i},this.startNumber);
-            this.actuator.addTile(tile,this);
+            this.actuator.addTile(tile,this,true);
         }
     }
+    this.setFixedTile();
+    this.updateScore(true);
+};
+GameManager.prototype.setFixedTile= function () {
+    this.fixTile=this.grid.findTileByPosition(this.getRandomPosition());
+    var stylesheetId='AsAdnHajAhdAHAStylesheet';
+    var doesStyleSheetExist=document.getElementById(stylesheetId);
+    if(doesStyleSheetExist!=null||doesStyleSheetExist!=undefined){
+        doesStyleSheetExist.parentNode.removeChild(doesStyleSheetExist);
+    }
+    var stylesheet=document.createElement('style');
+    stylesheet.textContent='.tile.tile-position-' + this.fixTile.x+'-'+this.fixTile.y+'{ box-shadow:'+'0 0 30px 10px rgba(243, 215, 116, 0.96), inset 0 0 0 1px rgba(213, 123, 123, 1);}';
+    stylesheet.setAttribute('id',stylesheetId);
+    document.querySelector('body').appendChild(stylesheet);
+};
+GameManager.prototype.getRandomPosition= function () {
+    var random={};
+    random.x=Math.floor(Math.random()*this.size);
+    random.y=Math.floor(Math.random()*this.size);
+    return random;
 };
 GameManager.prototype.restart= function () {
-
+    this.setup();
 };
 GameManager.prototype.split= function (event) {
+    if(this.gameOver){
+        return;
+    }
     var self=this;
     var id=parseInt(event.target.dataset.id);
     var tile=this.grid.findTileById(id);
+    if(tile.isFixed(self)||self.inTheWay>0){
+        return;
+    }
     var splitElements=this.grid.getSplitElements(tile);
+    self.inTheWay=splitElements.length;
     if(splitElements){
         splitElements.forEach(function(element){
             self.actuator.removeTile(id,self);
             self.actuator.addTile(element,self);
-            self.actuator.fireTile(element,self);
+            window.requestAnimationFrame(function () {
+                self.actuator.fireTile(element,self);
+            });
         });
     }
-
-    //var newTile=new Tile({x:id,y:1},256);
-    //this.actuator.addTile(newTile,this);
 };
-;
+GameManager.prototype.fireComplete=function(){//whwn fired tiles reaches its position this will be called
+    this.inTheWay--;
+    if(this.inTheWay==0){
+        this.updateScore();
+        this.gameOver=this.grid.isGameOver(this);
+    }
+};
+GameManager.prototype.updateScore= function (isStartOfgame) {
+    var currentScore=this.grid.currentScore(this);
+    var previousScore=this.storageManager.currentScore();
+    if(previousScore!=currentScore){
+        this.actuator.setCurrentScore(currentScore,previousScore);
+        this.storageManager.currentScore(currentScore);
+    }
+    if(isStartOfgame){
+        this.actuator.setBestScore(this.storageManager.bestScore());
+        this.actuator.setCurrentScore(currentScore,currentScore);
+        return;
+    }
+    var bestScore=this.storageManager.bestScore();
+    if(bestScore<currentScore){
+        this.storageManager.bestScore(currentScore);
+        this.actuator.setBestScore(currentScore);
+    }
+};;
 /*!
  * js/application.js
 */
@@ -435,5 +578,5 @@ GameManager.prototype.split= function (event) {
 var size=4;
 var game;
 window.requestAnimationFrame(function () {
-    game=new GameManager(size,InputManager,1,1);
+    game=new GameManager(size,InputManager,HTMLActuator,StorageManager);
 });

@@ -8,10 +8,28 @@
 	<script type="text/javascript" src="build/game.js"></script>
 	<link rel="stylesheet" type="text/css" href="build/game.css">
 </head>
-<body style="text-align:center;padding-top:20px;">
+<body>
 	<div class="gameContainer">
-		<div>Bubble JS</div>
-        <div class="newGame">New game</div>
+		<div class="head">
+            <div class="nameAndScore">
+                <div class="gameName">Bubble Fork</div>
+                <div class="scores">
+                    <div class="currentScoreContainer">
+                        <div>SCORE</div>
+                        <div class="currentScoreUpdater"></div>
+                        <div class="currentScore"></div>
+                    </div>
+                    <div class="bestScoreContainer">
+                        <div>BEST</div>
+                        <div class="bestScore"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="descContainer">
+                <span class="description">Split the numbers and join to fixed tile !</span>
+                <button class="newGame">New game</button>
+            </div>
+        </div>
 		<div class="gameGridContainer">
             <div class="gameContainerInner">
                 <div class="gameGrid" >
